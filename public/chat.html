@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat boot</title>
+</head>
+<body>
+    <div id="chat-container">
+        <input type="text" id="chat-input" placeholder="Ask me anything..." />
+        <button onclick="sendMessage()">Send</button>
+        <div id="chat-output"></div>
+    </div>
+    
+    <script>
+    async function sendMessage() {
+    const input = document.getElementById("chat-input").value;
+    
+    try {
+        const response = await fetch("http://localhost:3000/api/chat", {  // ✅ Correct API URL
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: input }),
+            mode: "cors"
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json(); // Fix "Unexpected end of JSON input" error
+        document.getElementById("chat-output").innerHTML += `<p><strong>You:</strong> ${input}</p>`;
+        document.getElementById("chat-output").innerHTML += `<p><strong>AI:</strong> ${data.reply}</p>`;
+
+    } catch (error) {
+        console.error("Fetch error:", error);
+        document.getElementById("chat-output").innerHTML += `<p style="color:red;">Error: ${error.message}</p>`;
+    }
+}
+    </script>
+</body>
+</html>
